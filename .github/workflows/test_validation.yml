@@ -1,0 +1,68 @@
+name: TEST - Run Tests & Merge to Main
+
+on:
+  push:
+    branches: [ "test" ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  run-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🧪 Run Tests
+        id: test
+        run: |
+          echo "🧪 Running test suite..."
+          python -m pytest tests/ -v --tb=short
+
+      - name: ✅ Tests Passed - Prepare Merge to MAIN
+        if: success()
+        run: |
+          echo "✅ All tests passed!"
+          echo "🚀 Preparing to merge to MAIN branch..."
+
+      - name: 🔀 Auto-merge to MAIN
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Fetch latest changes
+          git fetch origin main
+          
+          # Checkout main branch
+          git checkout main
+          git pull origin main
+          
+          # Merge test into main
+          git merge origin/test --no-ff -m "🔀 Auto-merge from test (all tests passed)"
+          
+          # Push to main
+          git push origin main
+
+      - name: ❌ Tests Failed
+        if: failure()
+        run: |
+          echo "❌ TESTS FAILED!"
+          echo "🚫 Merge to MAIN blocked"
+          echo "Please fix the failing tests before proceeding"
+          exit 1

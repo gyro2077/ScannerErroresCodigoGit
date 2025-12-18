@@ -1,0 +1,70 @@
+name: DEV - Vulnerability Scan
+
+on:
+  push:
+    branches: [ "dev" ]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  vulnerability-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+          cache: 'pip'
+
+      - name: 📦 Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: 🔍 Run AI Vulnerability Scanner
+        id: scan
+        run: |
+          echo "🔍 Scanning code for vulnerabilities..."
+          python scripts/ai_scan.py
+
+      - name: ✅ Scan Passed - Prepare Merge to TEST
+        if: success()
+        run: |
+          echo "✅ No vulnerabilities detected!"
+          echo "🚀 Preparing to merge to TEST branch..."
+
+      - name: 🔀 Auto-merge to TEST
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # Fetch latest changes
+          git fetch origin test
+          
+          # Checkout test branch
+          git checkout test
+          git pull origin test
+          
+          # Merge dev into test
+          git merge origin/dev --no-ff -m "🔀 Auto-merge from dev (vulnerability scan passed)"
+          
+          # Push to test
+          git push origin test
+
+      - name: ❌ Scan Failed - Vulnerabilities Detected
+        if: failure()
+        run: |
+          echo "❌ VULNERABILITIES DETECTED!"
+          echo "🚫 Merge to TEST blocked"
+          echo "Please fix the vulnerabilities before proceeding"
+          exit 1

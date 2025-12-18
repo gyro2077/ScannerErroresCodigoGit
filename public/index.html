@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scanner de Vulnerabilidades - CI/CD Pipeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-align: center;
+        }
+
+        .subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .pipeline {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 40px 0;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .stage {
+            flex: 1;
+            min-width: 150px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stage:hover {
+            transform: translateY(-5px);
+        }
+
+        .stage-icon {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .stage-name {
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 5px;
+        }
+
+        .stage-desc {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .features {
+            margin-top: 40px;
+        }
+
+        .feature {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .feature-desc {
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        .team {
+            margin-top: 40px;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .team h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .team-members {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .member {
+            background: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #28a745;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.9em;
+            margin: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .pipeline {
+                flex-direction: column;
+            }
+
+            .arrow {
+                transform: rotate(90deg);
+            }
+
+            h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🔐 Scanner de Vulnerabilidades</h1>
+        <p class="subtitle">Sistema Automatizado de CI/CD con Detección de Vulnerabilidades por IA</p>
+
+        <div class="pipeline">
+            <div class="stage">
+                <div class="stage-icon">🔍</div>
+                <div class="stage-name">DEV</div>
+                <div class="stage-desc">Escaneo de Vulnerabilidades</div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="stage">
+                <div class="stage-icon">🧪</div>
+                <div class="stage-name">TEST</div>
+                <div class="stage-desc">Pruebas Automatizadas</div>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="stage">
+                <div class="stage-icon">🚀</div>
+                <div class="stage-name">MAIN</div>
+                <div class="stage-desc">Despliegue a Producción</div>
+            </div>
+        </div>
+
+        <div class="features">
+            <div class="feature">
+                <div class="feature-title">✅ Detección Automática de Vulnerabilidades</div>
+                <div class="feature-desc">Modelo de Machine Learning entrenado para detectar SQL Injection, Command
+                    Injection, Code Injection y más</div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-title">🔄 Merge Automático</div>
+                <div class="feature-desc">Si el código es seguro, se fusiona automáticamente de DEV → TEST → MAIN</div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-title">🛡️ Bloqueo de Código Vulnerable</div>
+                <div class="feature-desc">El código con vulnerabilidades detectadas no puede avanzar en el pipeline
+                </div>
+            </div>
+
+            <div class="feature">
+                <div class="feature-title">🚀 Despliegue Continuo</div>
+                <div class="feature-desc">Despliegue automático a Vercel cuando el código llega a la rama MAIN</div>
+            </div>
+        </div>
+
+        <div class="team">
+            <h3>👥 Equipo de Desarrollo</h3>
+            <div class="team-members">
+                <div class="member">Chiliquinga Yeshua</div>
+                <div class="member">Ferrin Josue</div>
+                <div class="member">Sanmartin Jose</div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <span class="status-badge">✅ Sistema Activo</span>
+            <span class="status-badge">🔒 Seguridad Habilitada</span>
+            <span class="status-badge">🤖 IA Operativa</span>
+        </div>
+    </div>
+</body>
+
+</html>
