@@ -27,7 +27,10 @@ def analizar_codigo():
     print("🔍 Iniciando escaneo con IA...")
 
     for root, dirs, files in os.walk("."):
-        if ".git" in root or "models" in root or "scripts" in root:
+        # Skip common directories that shouldn't be scanned
+        skip_dirs = [".git", "models", "scripts", ".venv", "venv", "node_modules", 
+                     "__pycache__", ".pytest_cache", "env", ".env"]
+        if any(skip_dir in root for skip_dir in skip_dirs):
             continue
 
         for file in files:
