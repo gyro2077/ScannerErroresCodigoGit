@@ -3,6 +3,12 @@ name: MAIN - Deploy to Vercel
 on:
   push:
     branches: [ "main" ]
+  workflow_run:
+    workflows: ["TEST - Run Tests & Merge to Main"]
+    types:
+      - completed
+    branches:
+      - test
 
 jobs:
   deploy:
