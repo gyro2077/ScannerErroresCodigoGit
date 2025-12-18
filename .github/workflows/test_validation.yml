@@ -1,26 +1,22 @@
-name: TEST - Run Tests & Merge to Main
+name: TEST - Run Tests & Auto-merge
 
 on:
   push:
     branches: [ "test" ]
-  workflow_run:
-    workflows: ["DEV - Vulnerability Scan"]
-    types:
-      - completed
-    branches:
-      - dev
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  run-tests:
+  run-tests-and-merge:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
@@ -39,31 +35,24 @@ jobs:
           echo "🧪 Running test suite..."
           python -m pytest tests/ -v --tb=short
 
-      - name: ✅ Tests Passed - Prepare Merge to MAIN
+      - name: ✅ Tests Passed - Merge to MAIN
         if: success()
         run: |
           echo "✅ All tests passed!"
-          echo "🚀 Preparing to merge to MAIN branch..."
-
-      - name: 🔀 Auto-merge to MAIN
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
+          echo "🚀 Merging to MAIN branch..."
+          
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Fetch latest changes
+          # Fetch and checkout main branch
           git fetch origin main
-          
-          # Checkout main branch
           git checkout main
           git pull origin main
           
           # Merge test into main
           git merge origin/test --no-ff -m "🔀 Auto-merge from test (all tests passed)"
           
-          # Push to main
+          # Push to main - this will trigger the MAIN deployment workflow
           git push origin main
 
       - name: ❌ Tests Failed
