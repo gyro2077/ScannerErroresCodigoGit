@@ -1,4 +1,4 @@
-name: DEV - Vulnerability Scan
+name: DEV - Vulnerability Scan & Auto-merge
 
 on:
   push:
@@ -9,13 +9,14 @@ permissions:
   pull-requests: write
 
 jobs:
-  vulnerability-scan:
+  vulnerability-scan-and-merge:
     runs-on: ubuntu-latest
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          token: ${{ secrets.GH_PAT }}
 
       - name: 🐍 Setup Python
         uses: actions/setup-python@v5
@@ -34,31 +35,24 @@ jobs:
           echo "🔍 Scanning code for vulnerabilities..."
           python scripts/ai_scan.py
 
-      - name: ✅ Scan Passed - Prepare Merge to TEST
+      - name: ✅ Scan Passed - Merge to TEST
         if: success()
         run: |
           echo "✅ No vulnerabilities detected!"
-          echo "🚀 Preparing to merge to TEST branch..."
-
-      - name: 🔀 Auto-merge to TEST
-        if: success()
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT }}
-        run: |
+          echo "🚀 Merging to TEST branch..."
+          
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Fetch latest changes
+          # Fetch and checkout test branch
           git fetch origin test
-          
-          # Checkout test branch
           git checkout test
           git pull origin test
           
           # Merge dev into test
           git merge origin/dev --no-ff -m "🔀 Auto-merge from dev (vulnerability scan passed)"
           
-          # Push to test
+          # Push to test - this will trigger the TEST workflow
           git push origin test
 
       - name: ❌ Scan Failed - Vulnerabilities Detected
